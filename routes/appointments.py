@@ -6,7 +6,7 @@ router = APIRouter()
 
 # Modelos de datos
 class CrearCitaRequest(BaseModel):
-    fecha: str = Field(..., pattern=r"\d{4}-\d{2}-\d{2}")
+    fecha_inicio: str = Field(..., pattern=r"\d{4}-\d{2}-\d{2}")
     hora_inicio: str = Field(..., pattern=r"\d{2}:\d{2}")
     nombre_paciente: str
     celular_contacto: str
@@ -17,7 +17,7 @@ class CrearCitaRequest(BaseModel):
 async def crear_cita(data: CrearCitaRequest):
     try:
         # Cálculo de fecha y hora final
-        fecha_inicio = data.fecha
+        fecha_inicio = data.fecha_inicio
         hora_inicio = datetime.strptime(data.hora_inicio, "%H:%M")
         hora_fin = (hora_inicio + timedelta(minutes=45)).strftime("%H:%M")
         fecha_fin = fecha_inicio
@@ -45,7 +45,7 @@ async def buscar_cita(nombre_paciente: str, celular_contacto: str):
         response = {
             "mensaje": "Cita encontrada",
             "id": "cita123456",  # Ejemplo de ID
-            "fecha": "2024-01-01",
+            "fecha_inicio": "2024-01-01",
             "hora_inicio": "10:00",
             "hora_fin": "10:45",
             "nombre_paciente": nombre_paciente,
