@@ -12,6 +12,18 @@ class CrearCitaRequest(BaseModel):
     celular_contacto: str
     motivo_consulta: str
 
+class EditarCitaRequest(BaseModel):
+    id_cita: str
+    nueva_fecha: str
+    nuevo_horario: str
+
+class BuscarCitaRequest(BaseModel):
+    nombre_paciente: str
+    celular_contacto: str
+
+class BorrarCitaRequest(BaseModel):
+    id_cita: str
+
 # Endpoints
 @router.post("/crear_cita")
 async def crear_cita(data: CrearCitaRequest):
@@ -37,9 +49,8 @@ async def crear_cita(data: CrearCitaRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al crear la cita: {e}")
 
-
-@router.get("/buscar_cita")
-async def buscar_cita(nombre_paciente: str, celular_contacto: str):
+@router.post("/buscar_cita")
+async def buscar_cita(data: BuscarCitaRequest):
     try:
         # Simulación de respuesta desde Make (reemplazar con conexión real)
         response = {
@@ -48,8 +59,8 @@ async def buscar_cita(nombre_paciente: str, celular_contacto: str):
             "fecha_inicio": "2024-01-01",
             "hora_inicio": "10:00",
             "hora_fin": "10:45",
-            "nombre_paciente": nombre_paciente,
-            "celular_contacto": celular_contacto,
+            "nombre_paciente": data.nombre_paciente,
+            "celular_contacto": data.celular_contacto,
             "motivo_consulta": "Consulta de rutina"
         }
 
@@ -57,20 +68,19 @@ async def buscar_cita(nombre_paciente: str, celular_contacto: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al buscar la cita: {e}")
 
-
 @router.put("/editar_cita")
-async def editar_cita(id_cita: str, nueva_fecha: str, nuevo_horario: str):
+async def editar_cita(data: EditarCitaRequest):
     try:
         # Cálculo de la nueva hora final
-        nuevo_horario_inicio = datetime.strptime(nuevo_horario, "%H:%M")
+        nuevo_horario_inicio = datetime.strptime(data.nuevo_horario, "%H:%M")
         nuevo_horario_fin = (nuevo_horario_inicio + timedelta(minutes=45)).strftime("%H:%M")
-        nueva_fecha_final = nueva_fecha  # La fecha final es igual a la nueva fecha de inicio
+        nueva_fecha_final = data.nueva_fecha  # La fecha final es igual a la nueva fecha de inicio
 
         # Crear la respuesta para Make
         response = {
-            "id_cita": id_cita,
-            "nueva_fecha_inicio": nueva_fecha,
-            "nuevo_horario_inicio": nuevo_horario,
+            "id_cita": data.id_cita,
+            "nueva_fecha_inicio": data.nueva_fecha,
+            "nuevo_horario_inicio": data.nuevo_horario,
             "nueva_fecha_final": nueva_fecha_final,
             "nuevo_horario_final": nuevo_horario_fin,
         }
@@ -79,15 +89,14 @@ async def editar_cita(id_cita: str, nueva_fecha: str, nuevo_horario: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al editar la cita: {e}")
 
-
 @router.delete("/borrar_cita")
-async def borrar_cita(id_cita: str):
+async def borrar_cita(data: BorrarCitaRequest):
     try:
         # Crear la respuesta para Make
         response = {
-            "id_cita": id_cita,
+            "id_cita": data.id_cita,
         }
 
-        return {"mensaje": "Datos de eliminación calculados correctamente", "response": response}
+        return {"mensaje": "Cita eliminada correctamente", "response": response}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al borrar la cita: {e}")
