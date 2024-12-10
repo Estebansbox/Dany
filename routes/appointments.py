@@ -71,23 +71,34 @@ async def buscar_cita(data: BuscarCitaRequest):
 @router.put("/editar_cita")
 async def editar_cita(data: EditarCitaRequest):
     try:
+        # Simular consulta de la cita original (esto debería venir de una base de datos en un entorno real)
+        cita_original = {
+            "id_cita": data.id_cita,
+            "nombre_paciente": "Juan Pérez",
+            "celular_contacto": "1234567890",
+            "motivo_consulta": "Consulta general"
+        }
+
         # Cálculo de la nueva hora final
         nuevo_horario_inicio = datetime.strptime(data.nuevo_horario, "%H:%M")
-        nuevo_horario_fin = (nuevo_horario_inicio + timedelta(minutes=45)).strftime("%H:%M")
-        nueva_fecha_final = data.nueva_fecha  # La fecha final es igual a la nueva fecha de inicio
+        nuevo_horario_final = (nuevo_horario_inicio + timedelta(minutes=45)).strftime("%H:%M")
 
-        # Crear la respuesta para Make
+        # Combinar datos originales con los nuevos
         response = {
-            "id_cita": data.id_cita,
+            "id_cita": cita_original["id_cita"],
+            "nombre_paciente": cita_original["nombre_paciente"],
+            "celular_contacto": cita_original["celular_contacto"],
+            "motivo_consulta": cita_original["motivo_consulta"],
             "nueva_fecha_inicio": data.nueva_fecha,
             "nuevo_horario_inicio": data.nuevo_horario,
-            "nueva_fecha_final": nueva_fecha_final,
-            "nuevo_horario_final": nuevo_horario_fin,
+            "nuevo_horario_final": nuevo_horario_final,
+            "event_id": "test-event-id-123"  # Este debería ser el ID real del evento en Google Calendar
         }
 
         return {"mensaje": "Datos de edición calculados correctamente", "response": response}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al editar la cita: {e}")
+
 
 @router.delete("/borrar_cita")
 async def borrar_cita(data: BorrarCitaRequest):
